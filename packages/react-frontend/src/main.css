@@ -377,8 +377,8 @@
   }
   
   body {
-    color: #404040;
-    background: white;
+    color: #3f1d1d;
+    background: rgb(205, 195, 195);
     font-size: 1rem;
   }
   
@@ -406,9 +406,9 @@
     margin: 1.5rem 0;
     font-weight: 600;
     /* font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, sans-serif; */
-    /* font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, sans-serif;
-    line-height: 1.2; */
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, sans-serif;
+    line-height: 1.2;
+    
     color: #404040;
   }
   
@@ -785,10 +785,10 @@
     display: inline-block;
     border: 1px solid #0366ee;
     border-radius: 4px;
-    background: #0366ee;
-    color: #ffffff;
+    background: #b61741;
+    color: #2b928d;
     font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystem  Font, Helvetica Neue, Helvetica, "Comic Sans MS", sans-serif;
     font-size: 1rem;
     text-transform: none;
     padding: 0.75rem 1.25rem;
@@ -801,8 +801,8 @@
   }
   
   .button:hover, a.button:hover, button:hover, [type=submit]:hover, [type=reset]:hover, [type=button]:hover {
-    border: 1px solid #0250bc;
-    background: #0250bc;
+    border: 1px solid #ac15ba;
+    background: #ac0b96;
     color: #ffffff;
     text-decoration: none;
   }
@@ -985,7 +985,7 @@
   }
   
   thead th {
-    border-bottom: 2px solid #dedede;
+    border-bottom: 2px solid #871b1b;
   }
   
   tfoot th {
