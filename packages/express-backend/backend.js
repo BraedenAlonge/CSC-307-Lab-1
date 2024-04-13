@@ -40,19 +40,11 @@ const users = {
       id: "zap555",
       name: "Dennis",
       job: "Bartender"
-    }
+    },
+ 
   ]
 };
 
-
-const findUserByName = (name) => {
-  return users["users_list"].filter(
-    (user) => user["name"] === name
-  );
-};
-
-const findUserById = (id) =>
-  users["users_list"].find((user) => user["id"] === id);
 
 app.get("/users/:id", (req, res) => {
   const id = req.params["id"]; //or req.params.id
@@ -73,3 +65,67 @@ app.get("/users", (req, res) => {
     res.send(users);
   }
 });
+
+//Search
+app.get("/users/:name/:job", (req, res) => {
+  const name = req.query.name;
+  const job = req.query.job;
+  if (name === undefined || job === undefined) {
+    res.status(400).send("Both name and job required.");
+    return;
+  }
+    let result = findUserByNameAndJob(name, job);
+    result = { users_list: result };
+    res.send(result);
+});
+
+
+
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  addUser(userToAdd);
+  res.send();
+});
+
+app.delete("/users/:id", (req, res) => {
+  const id = req.params["id"]; //or req.params.id
+  let result = findUserById(id);
+  if (result === undefined) {
+    res.status(400).send("Bad Request.");
+  } else {
+    res.status(deleteUser(id)).end();
+  }
+});
+
+//Helper functions
+
+//Name
+const findUserByName = (name) => {
+  return users["users_list"].filter(
+    (user) => user["name"] === name
+  );
+};
+
+//Name and Job
+const findUserByNameAndJob = (name, job) => {
+  return users["users_list"].filter(
+    (user) => user["name"] === name && user["job"] === job
+  );
+};
+
+//Id
+const findUserById = (id) =>
+  users["users_list"].find((user) => user["id"] === id);
+
+
+//Add user
+const addUser = (user) => {
+ users["users_list"].push(user);
+  return user;
+};
+
+//Delete user
+const deleteUser = (id) => {
+  users["users_list"] = users["users_list"].filter((users) => (id != users.id));
+   return 200;
+ };
