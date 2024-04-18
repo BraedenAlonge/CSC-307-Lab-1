@@ -85,8 +85,10 @@ app.get("/users/:name/:job", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
+  generateID(userToAdd);
   addUser(userToAdd);
-  res.send();
+  console.log(userToAdd);
+  res.status(201).send(userToAdd);
 });
 
 app.delete("/users/:id", (req, res) => {
@@ -129,5 +131,20 @@ const addUser = (user) => {
 //Delete user
 const deleteUser = (id) => {
   users["users_list"] = users["users_list"].filter((users) => (id != users.id));
-   return 200;
+   return 204;
  };
+
+ //Generate Random ID
+
+ const generateID = (userToAdd) => {
+  var letID1 = Math.trunc(Math.random() *26);
+  var letID2 = Math.trunc(Math.random() *26);
+  var letID3 = Math.trunc(Math.random() *26);
+  letID1 = String.fromCharCode(letID1 + 65);
+  letID2 = String.fromCharCode(letID2 + 65);
+  letID3 = String.fromCharCode(letID3 + 65);
+
+  var digID = Math.trunc(Math.random() * 1000);
+  var ident = letID1 + letID2 + letID3 + digID;
+   userToAdd.id = ident.toLowerCase();
+ }
