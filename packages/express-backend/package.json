@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/BraedenAlonge/CSC-307-Lab-1#readme",
   "dependencies": {
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "mongoose": "^8.3.2"
   }
 }

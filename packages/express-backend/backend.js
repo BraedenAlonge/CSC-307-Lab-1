@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import users from "./user-services.js";
 
 const app = express();
 const port = 8000;
@@ -16,57 +17,47 @@ app.listen(port, () => {
     `Example app listening at http://localhost:${port}`
   );
 });
-const users = {
-  users_list: [
-    {
-      id: "xyz789",
-      name: "Charlie",
-      job: "Janitor"
-    },
-    {
-      id: "abc123",
-      name: "Mac",
-      job: "Bouncer"
-    },
-    {
-      id: "ppp222",
-      name: "Mac",
-      job: "Professor"
-    },
-    {
-      id: "yat999",
-      name: "Dee",
-      job: "Aspring actress"
-    },
-    {
-      id: "zap555",
-      name: "Dennis",
-      job: "Bartender"
-    },
- 
-  ]
-};
 
-
-app.get("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  let result = findUserById(id);
-  if (result === undefined) {
-    res.status(404).send("Resource not found.");
-  } else {
-    res.send(result);
-  }
-});
-app.get("/users", (req, res) => {
+app.get("/users", async (req, res) => {
   const name = req.query.name;
   if (name != undefined) {
-    let result = findUserByName(name);
-    result = { users_list: result };
-    res.send(result);
+    users.findUserByName(name)
+    .then((result) => {
+      res.send({users_list: result});
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Internal server error (Usr-I).");
+    });
   } else {
-    res.send(users);
+    users.getUsers()
+    .then((result) => {
+      res.send({users_list: result});
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Internal server error (Usr-II).");
+    });
   }
 });
+
+app.get("/users/:id", async (req, res) => {
+  const _id = req.params["id"]; //or req.params.id
+  users.findUserById(_id)
+  .then((result) => {
+    if (!result) {
+      res.status(404).send("Resource not found (UsrID).");
+    } else {
+      res.send(result);
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+    res.status(500).send("Internal server error (UsrID).")
+  });
+});
+
+
 
 //Search
 app.get("/users/:name/:job", (req, res) => {
@@ -76,75 +67,52 @@ app.get("/users/:name/:job", (req, res) => {
     res.status(400).send("Both name and job required.");
     return;
   }
-    let result = findUserByNameAndJob(name, job);
-    result = { users_list: result };
-    res.send(result);
+    users.findUserByName(name)
+    .then((result) => {
+      const jobFilter = result.filter((user) => user.job === job);
+      req.send({users_list: jobFilter });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Internal server error.");
+    });
 });
 
 
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  generateID(userToAdd);
-  addUser(userToAdd);
-  console.log(userToAdd);
-  res.status(201).send(userToAdd);
+  
+  users.addUser(userToAdd)
+  .then((result) => {
+    console.log(result);
+    res.status(201).send(result);
+  })
+  .catch((error) => {
+    console.error(error);
+    res.status(500).send("Internal server error (post).");
+  });
 });
 
 app.delete("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  let result = findUserById(id);
-  if (result === undefined) {
-    res.status(400).send("Bad Request.");
-  } else {
-    res.status(deleteUser(id)).end();
-  }
+  console.log("Entering delete...");
+  const _id = req.params["id"]; //or req.params.id
+  console.log("ID: " + _id);
+  users.deleteUser(_id)
+  .then((result) => {
+    console.log("Hello");
+    console.log(result);
+    if (result === undefined) {
+      res.status(404).send("Bad Request.");
+    } else {
+      res.status(204).end();
+    }
+  })
+ .catch((error) => {
+  console.error(error);
+  console.log("Catch delete...");
+  res.status(500).send("Internal server error (delete).");
+ })
 });
 
-//Helper functions
 
-//Name
-const findUserByName = (name) => {
-  return users["users_list"].filter(
-    (user) => user["name"] === name
-  );
-};
-
-//Name and Job
-const findUserByNameAndJob = (name, job) => {
-  return users["users_list"].filter(
-    (user) => user["name"] === name && user["job"] === job
-  );
-};
-
-//Id
-const findUserById = (id) =>
-  users["users_list"].find((user) => user["id"] === id);
-
-
-//Add user
-const addUser = (user) => {
- users["users_list"].push(user);
-  return user;
-};
-
-//Delete user
-const deleteUser = (id) => {
-  users["users_list"] = users["users_list"].filter((users) => (id != users.id));
-   return 204;
- };
-
- //Generate Random ID
-
- const generateID = (userToAdd) => {
-  var letID1 = Math.trunc(Math.random() *26);
-  var letID2 = Math.trunc(Math.random() *26);
-  var letID3 = Math.trunc(Math.random() *26);
-  letID1 = String.fromCharCode(letID1 + 65);
-  letID2 = String.fromCharCode(letID2 + 65);
-  letID3 = String.fromCharCode(letID3 + 65);
-
-  var digID = Math.trunc(Math.random() * 1000);
-  var ident = letID1 + letID2 + letID3 + digID;
-   userToAdd.id = ident.toLowerCase();
- }
